@@ -17,12 +17,6 @@ Variables
 
    default: ``8200``
 
-.. data:: vault_command_options
-
-   Extra options to pass to Vault at startup
-
-   default: ``-insecure``
-
 .. data:: vault_init_json
 
    Initial JSON configuration for Vault
