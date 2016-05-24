@@ -12,7 +12,7 @@
 
   tasks:
 
-    - include_vars: ../roles/elk/defaults/main.yml
+    - include_vars: ../roles/elasticsearch/defaults/main.yml
 
     - name: discover mantl-api url
       sudo: no
