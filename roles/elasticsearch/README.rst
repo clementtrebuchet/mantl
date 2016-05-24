@@ -6,6 +6,11 @@ Elasticsearch
 This role runs an Elasticsearch cluster via the `Elasticsearch Mesos Framework
 <https://github.com/mesos/elasticsearch>`_. 
 
+.. note:: The standalone Elasticsearch role is intended to be used for custom
+          Elasticsearch deployments. If you are looking for the full ELK stack
+          for collecting and visualizing Mantl logs, you should install the ELK
+          addon.
+
 Installation
 ------------
 

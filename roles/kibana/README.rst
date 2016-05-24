@@ -9,6 +9,10 @@ data. Kibana is run via the `Kibana Mesos Framework
 Elasticsearch client node (which acts as a smart load balancer for the
 Elasticsearch cluster) and includes a default sample dashboard.
 
+.. note:: The standalone Kibana role is intended to be used for custom Kibana
+          deployments. If you are looking for the full ELK stack for collecting
+          and visualizing Mantl logs, you should install the ELK addon.
+
 Installation
 ------------
 
