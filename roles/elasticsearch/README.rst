@@ -1,52 +1,45 @@
-ELK
-=========
+Elasticsearch
+==============
 
-.. versionadded:: 1.0
-
-The ELK role combines Elasticsearch, Logstash, and Kibana to provide automatic
-log shipping and metrics collection from all Mantl nodes to an Elasticsearch
-cluster. Kibana is available to visualize and analyze this data.
+.. versionadded:: 1.2
 
 This role runs an Elasticsearch cluster via the `Elasticsearch Mesos Framework
-<https://github.com/mesos/elasticsearch>`_. It also configures Logstash on all
-nodes to forward logs to that cluster. Finally, Kibana is run via the `Kibana
-Mesos Framework <https://github.com/mesos/kibana>`_. It is configured to talk to
-an Elasticsearch client node (which acts as a smart load balancer for the
-Elasticsearch cluster) and includes a default sample dashboard.
+<https://github.com/mesos/elasticsearch>`_. 
 
 Installation
 ------------
 
-As of 1.0, the ELK stack is distributed as an addon for Mantl. After a
+As of 1.2, Elasticsearch is distributed as an addon for Mantl. After a
 successful initial run (from your customized ``sample.yml``), install it with
-``ansible-playbook -e @security.yml addons/elk.yml``. It can take several
-minutes for all components to deploy and become healthy.
+``ansible-playbook -e @security.yml addons/elasticsearch.yml``. It can take
+several minutes for all components to deploy and become healthy.
 
 Accessing User Interfaces
 -------------------------
 
-After the Elasticsearch framework and the Kibana application have been
-successfully installed and initialized, it should be possible to access their
-corresponding user interfaces directly from Mantl UI.
+After the Elasticsearch framework has been successfully installed and
+initialized, it should be possible to access its user interface directly from
+Mantl UI.
 
 Default Configuration
 ---------------------
 
-The default configuration of the ELK stack will require at least 4 worker nodes,
-each having at least 1 full CPU and 1 GB of memory available to Mesos. In
-addition, each worker node will need to have at least 5 GBs of free disk space.
+The default configuration of the Elasticsearch cluster will require at least 4
+worker nodes, each having at least 1 full CPU and 1 GB of memory available to
+Mesos. In addition, each worker node will need to have at least 5 GBs of free
+disk space.
 
-While a cluster of this size will be sufficient to evaluate and test the ELK
-stack on Mantl, we encourage you to review the configuration variables below to
-size the cluster as appropriate for your environment.
+While a cluster of this size will be sufficient to evaluate and test
+Elasticsearch on Mantl, we encourage you to review the configuration variables
+below to size the cluster as appropriate for your environment.
 
 Customizing your Installation
 -----------------------------
 
-The size of your elasticsearch cluster is controlled by the variables documented
-below. As an example, let's say that you just wanted to stand up an ELK stack on
-a small cluster for evaluation purposes. You only want to run a single node
-since you are not worried about high availability or data safety in this
+The size of your Elasticsearch cluster is controlled by the variables documented
+below. As an example, let's say that you just wanted to stand up a small
+Elasticsearch cluster for evaluation purposes. You only want to run a single
+node since you are not worried about high availability or data safety in this
 scenario. To do this, create a new yaml file (``elasticsearch.yml``, for
 example) that looks something like this:
 
@@ -64,54 +57,34 @@ and the Elasticsearch nodes (executors) to each use 512 MB of memory and a half
 a CPU each. We are also indicating that we only want a single Elasticsearch node
 launched in the cluster.
 
-When you install the ELK addon, you can tell ansible to use this yaml file to
-configure your installation:
+When you install the Elasticsearch addon, you can tell ansible to use this yaml
+file to configure your installation:
 
 .. code-block:: shell
 
-   ansible-playbook -e @security.yml -e @elasticsearch.yml addons/elk.yml
+   ansible-playbook -e @security.yml -e @elasticsearch.yml addons/elasticsearch.yml
 
-With this configuration, Kibana and the Elasticsearch client node will still be
-deployed with their default configurations. Of course, you can customize further
-as needed.
+With this configuration, the Elasticsearch client node will still be deployed
+with its default configuration. Of course, you can customize further as needed.
 
-Kibana deployment
------------------
+Uninstalling the Elasticsearch addon
+------------------------------------
 
-By default, Kibana will be run via the Kibana Mesos framework. It is also
-possible to run Kibana on Marathon. You can control this by setting the
-``kibana_package`` variable. Set it to ``kibana`` to run Kibana via Marathon and
-``kibana-mesos`` (the default) to run it via the Mesos framework.
-
-Uninstalling the ELK Addon
---------------------------
-
-As of 1.1, we now distribute a playbook that can be used to uninstall the addon:
+The Elasticsearch addon can be removed by running the following command:
 
 .. code-block:: shell
 
-   ansible-playbook -e @security.yml addons/elk-uninstall.yml
+   ansible-playbook -e @security.yml -e 'elasticsearch_uninstall=true' addons/elasticsearch.yml
 
-This will remove the Elasticsearch framework, the Elasticsearch client node, and
-Kibana from your cluster. By default, the Elasticsearch data directories will
+This will remove the Elasticsearch framework and the Elasticsearch client node
+from your cluster. By default, the Elasticsearch data directories will
 not be removed. If you do not need to preserve your Elasticsearch data, you can
 set the ``elasticsearch_remove_data`` variable to true when you run the
-uninstall playbook:
+uninstall:
 
 .. code-block:: shell
 
-   ansible-playbook -e @security.yml -e 'elasticsearch_remove_data=true' addons/elk-uninstall.yml
-
-Upgrading
----------
-
-You do not need to re-install the addon on an existing pre-1.1 Mantl cluster
-that is already running the ELK addon. The existing addon should continue
-running fine on 1.1. If you do wish to switch to the updated addon, you should
-uninstall the Elasticsearch framework and disable Kibana on your control nodes
-(see the 1.0.3 uninstall instructions below) prior to re-installing the addon.
-It will be up to you to backup and migrate your Elasticsearch data in this
-scenario.
+   ansible-playbook -e @security.yml -e 'elasticsearch_uninstall=true elasticsearch_remove_data=true' addons/elk-uninstall.yml
 
 Uninstalling the Elasticsearch Framework (1.0.3)
 ------------------------------------------------
@@ -143,19 +116,6 @@ installed to follow this example.
 
       # delete all elasticsearch data (optional)
       ansible 'role=worker' -s -m shell -a 'rm -rf /data'
-
-Uninstalling Kibana (1.0.3)
----------------------------
-
-On Mantl 1.0.3, we do not have an uninstall process for Kibana. However, it is
-easy to disable it on your cluster. The following commands can be run to disable
-Kibana:
-
-.. code-block:: shell
-
-   ansible 'role=control' -s -m shell -a 'consul-cli service-deregister kibana'
-   ansible 'role=control' -s -m shell -a 'rm /etc/consul/kibana.json'
-   ansible 'role=control' -s -m service -a 'name=kibana enabled=no state=stopped'
 
 Variables
 ---------
@@ -249,7 +209,7 @@ Variables
 
    The name of the service that is registered in Consul when the Elasticsearch
    client node is deployed. This needs to match what would be derived via
-   mesos-consul. For example, when ``elasticseach_client_id`` is set to
+   mesos-consul. For example, when ``elasticsearch_client_id`` is set to
    ``mantl/elasticsearch-client``, the service name should be
    ``elasticsearch-client-mantl``.
 
@@ -286,132 +246,15 @@ Variables
 
    default: 512
 
-.. data:: kibana_package
+.. data:: elasticsearch_uninstall
 
-   The name of the package to use for the Kibana deployment. When set to
-   ``kibana-mesos``, the Kibana Mesos framework will be used. When set to
-   ``kibana``, Kibana will deployed in a Docker container running in Marathon.
+   Run the role in uninstall mode to remove Elasticsearch from your cluster.
 
-   default: kibana-mesos
+   default: false
 
-.. data:: kibana_id
+.. data:: elasticsearch_remove_data
 
-   The id of the Kibana application in Marathon (Kibana on Marathon).
+   Indicate whether to delete elasticsearch data directories when uninstalling
+   Elasticsearch.
 
-   default: mantl/kibana
-
-.. data:: kibana_service
-
-   The name of the service that is registered in Consul when Kibana is deployed.
-   This needs to match what would be derived via mesos-consul. For example, when
-   ``kibana_id`` is set to ``mantl/kibana``, the service name should be
-   ``kibana-mantl`` (Kibana on Marathon).
-
-   default: kibana-mantl
-
-.. data:: kibana_image
-
-   The Docker image to use for Kibana (Kibana on Marathon).
-
-   default: ciscocloud/mantl-kibana:4.3.2
-
-.. data:: kibana_elasticsearch_service
-
-   The name of the Elasticsearch service registered in Consul for the Kibana
-   instance to connect to (Kibana on Marathon).
-
-   default: "{{ elasticsearch_client_service }}"
-
-.. data:: kibana_cpu
-
-   The amount of CPU resources to allocate to each Kibana instance (Kibana on Marathon).
-
-   default: 0.5
-
-.. data:: kibana_ram
-
-   The amount of memory to allocate to each instance of Kibana (MB) (Kibana on Marathon).
-
-   default: 512
-
-.. data:: kibana_instances
-
-   The number of Kibana instances to run (Kibana on Marathon).
-
-   default: 1
-
-.. data:: kibana_mesos_id
-
-   The id of the Kibana framework application in Marathon (Kibana Mesos
-   framework).
-
-   default: mantl/kibana
-
-.. data:: kibana_mesos_framework_name
-
-   The name of the Kibana Mesos framework (Kibana Mesos framework). 
-
-   default: kibana-mantl
-
-.. data:: kibana_mesos_service
-
-   The name of the service that is registered in Consul when the Kibana
-   framework is deployed. This needs to match what would be derived via
-   mesos-consul. For example, when ``kibana_mesos_id`` is set to
-   ``mantl/kibana``, the service name should be ``kibana-mantl`` (Kibana Mesos
-   framework).
-
-   default: kibana-mantl
-
-.. data:: kibana_mesos_image
-
-   The Docker image to use for Kibana (Kibana Mesos framework).
-
-   default: ciscocloud/mantl-kibana:4.3.2
-
-.. data:: kibana_mesos_elasticsearch_service
-
-   The name of the Elasticsearch service registered in Consul for the Kibana
-   instance to connect to (Kibana Mesos framework).
-
-   default: "{{ elasticsearch_client_service }}"
-
-.. data:: kibana_mesos_kibana_service
-
-   The name of the Kibana service registered in Consul (Kibana Mesos framework).
-
-   default: "{{ kibana_mesos_framework_name }}-task"
-
-.. data:: kibana_mesos_scheduler_cpu
-
-   The amount of CPU resources to allocate to the Kibana framework scheduler
-   (Kibana Mesos framework).
-
-   default: 0.2
-
-.. data:: kibana_mesos_scheduler_ram
-
-   The amount of memory to allocate to the Kibana framework scheduler (MB)
-   (Kibana Mesos framework).
-
-   default: 256
-
-.. data:: kibana_mesos_executor_cpu
-
-   The amount of CPU resources to allocate to each Kibana executor instance
-   (Kibana Mesos framework).
-
-   default: 0.5
-
-.. data:: kibana_mesos_executor_ram
-
-   The amount of memory to allocate to each Kibana executor instance (MB)
-   (Kibana Mesos framework).
-
-   default: 512
-
-.. data:: kibana_mesos_instances
-
-   The number of Kibana executors to launch (Kibana Mesos framework).
-
-   default: 1
+   default: false

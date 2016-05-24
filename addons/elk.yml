@@ -7,9 +7,10 @@
 - include: "{{ playbook_dir }}/../playbooks/check-requirements.yml"
 
 - hosts: all
+  vars:
+    elk_uninstall: false
+    kibana_uninstall: "{{ elk_uninstall|bool }}"
+    elasticsearch_uninstall: "{{ elk_uninstall|bool }}"
+    elasticsearch_remove_data: false
   roles:
-    - logstash
-
-- hosts: role=control
-  roles:
-    - elasticsearch
+    - elk

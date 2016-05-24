@@ -1,0 +1,6 @@
+---
+- include: install.yml
+  when: "(not (kibana_uninstall|bool)) and ('role=control' in group_names)"
+
+- include: uninstall.yml
+  when: kibana_uninstall|bool
