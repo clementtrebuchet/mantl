@@ -132,6 +132,12 @@ Variables
 
    default: 1024
 
+.. data:: elasticsearch_java_opts
+
+   The JAVA_OPTS value that should be set in the environment.
+
+   default: -Xms1g -Xmx1g
+
 .. data:: elasticsearch_executor_ram
 
    The amount of memory to allocate to each Elasticsearch executor instance
@@ -243,13 +249,19 @@ Variables
 
    The amount of CPU resources to allocate to the Elasticsearch client node.
 
-   default: 0.5
+   default: 1.0
 
 .. data:: elasticsearch_client_ram
 
    The amount of memory to allocate to the Elasticsearch client node (MB).
 
-   default: 512
+   default: 1024
+
+.. data:: elasticsearch_client_java_opts
+
+   The JAVA_OPTS value that should be set in the environment.
+
+   default: -Xms1g -Xmx1g
 
 .. data:: elasticsearch_uninstall
 

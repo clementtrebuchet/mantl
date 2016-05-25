@@ -1,5 +1,6 @@
 ---
 # elasticsearch framework
+elasticsearch_java_opts: "-Xms1g -Xmx1g"
 elasticsearch_ram: 1024
 elasticsearch_executor_ram: 1024
 elasticsearch_disk: 5120
@@ -19,8 +20,9 @@ elasticsearch_client_service: elasticsearch-client-mantl
 elasticsearch_client_elasticsearch_service: transport_port.{{ elasticsearch_executor_name }}
 elasticsearch_client_client_port: 9200
 elasticsearch_client_transport_port: 9300
-elasticsearch_client_cpu: 0.5
-elasticsearch_client_ram: 512
+elasticsearch_client_cpu: 1
+elasticsearch_client_ram: 1024
+elasticsearch_client_java_opts: "-Xms1g -Xmx1g"
 
 es_packages:
   elasticsearch:
